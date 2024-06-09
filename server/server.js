@@ -1,5 +1,5 @@
 const express = require('express');
-const { startApolloServer} = require("apollo-server-express");
+const { ApolloServer} = require("apollo-server-express");
 const path = require('path');
 const {typeDefs, resolvers } = require("./schemas");
 const { authMiddleware } = require("./utils/auth");
@@ -14,7 +14,7 @@ app.use(express.json());
 
 // if we're in production, serve client/build as static assets
 async function startServer(typeDefs, resolvers) {
-  const server = new startApolloServer({
+  const server = new ApolloServer({
     typeDefs,
     resolvers,
     context: authMiddleware,
@@ -24,11 +24,11 @@ async function startServer(typeDefs, resolvers) {
   server.applyMiddleware({ app });
 
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/build')));
+    app.use(express.static(path.join(__dirname, '../client')));
   }
 
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    res.sendFile(path.join(__dirname, '../client/index.html'));
   });
 
   db.once('open', () => {
